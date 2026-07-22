@@ -38,4 +38,5 @@ logs/
 # Derived data
 !data/processed/dimension_distances.json
 
-# Environment variables .env
+.env
+output/individual/
