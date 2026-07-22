@@ -118,7 +118,11 @@ leadership-360-feedback/
 │   ├── 04-乔哈里视窗可视化方案.md
 │   ├── 05-个体报告生成方案.md
 │   ├── 06-RAG知识库集成方案.md
-│   └── 07-Skill封装方案.md
+│   ├── 07-Skill封装方案.md
+│   ├── 08-数据分析规范与方法论.md
+│   ├── 09-评语编码方案与管线设计.md
+│   ├── 10-评语编码LLM系统Prompt.md
+│   └── 11-L3L4乔哈里阈值选择分析.md
 ├── notes/                    ← 工作记忆与运营笔记
 │   ├── 工作记忆.md
 │   ├── 关键决策日志.md
@@ -159,3 +163,5 @@ leadership-360-feedback/
 | 1.5 | 2026-07-21 | AGENTS.md v1.5: 新增规则8(RAG集成规范)+规则9(Skill封装规范)+规则10(严禁操作); 新增src/rag/模块结构 |
 | 1.6 | 2026-07-21 | narrative_22 重构（维度级偏差扫描+3视角递进推断）; 引用清洗（模板+_sanitize_quote）; 评价人数统计bug修复（preprocess.py）; QA新增2项检查（总分15→17）; 10份完整管线报告验证通过 |
 | 1.7 | 2026-07-22 | 新增L3全面统计分析脚本与报告（generate_l3_analysis.py）；新增L3阈值分析脚本与报告（threshold_analysis_l3.py）；L3常模计算；encoding.py Phase 4 LLM接入（call_llm→DeepSeek API）；_call_llm_api空内容重试；max_tokens 2048→4096；L3+L4距离数据合并 |
+| 1.8 | 2026-07-22 | 新增 docs/11 L3/L4乔哈里阈值选择分析专题文档；AGENTS.md目录树同步更新 docs/08-11 |
+| 1.9 | 2026-07-22 | Phase A: 阈值层级感知化 - _get_other_threshold() 函数；narrative.py动态阈值；dimension_distances.json重算(L3=4.30/L4=4.40)；precompute_distances.py；Phase B: L3评语编码Phase 1-4全量196人完成(DeepSeek LLM成功率100%) |

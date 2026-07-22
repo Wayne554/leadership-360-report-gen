@@ -44,7 +44,14 @@ DIM_NAMES = [
 RATER_SOURCES = ["上级", "协同方", "下级"]
 LEVEL_LABELS = {"L3": "战略执行层", "L4": "基层管理者"}
 JOHARI_THRESHOLD_SELF = 4.50
-JOHARI_THRESHOLD_OTHER = 4.40
+
+
+def _get_other_threshold(level: str = "L4") -> float:
+    """根据层级返回他评阈值。"""
+    thresholds = {"L3": 4.30, "L4": 4.40}
+    return thresholds.get(level, 4.40)
+
+
 DOMAIN_MAP = {
     "战略思维-科学决策":  "驱动业务",
     "创新引领-持续精进":  "驱动业务",
@@ -203,6 +210,7 @@ def make_johari_chart(
     dims: list[str],
     self_scores: list[float],
     other_scores: list[float],
+    level: str = "L4",
 ) -> str:
     """生成乔哈里视窗四象限散点图 HTML。"""
     colors = {
@@ -218,11 +226,11 @@ def make_johari_chart(
         o = other_scores[i]
         if s is None or np.isnan(s) or o is None or np.isnan(o):
             continue
-        if s >= JOHARI_THRESHOLD_SELF and o >= JOHARI_THRESHOLD_OTHER:
+        if s >= JOHARI_THRESHOLD_SELF and o >= _get_other_threshold(level):
             q = "优势区"
-        elif s < JOHARI_THRESHOLD_SELF and o >= JOHARI_THRESHOLD_OTHER:
+        elif s < JOHARI_THRESHOLD_SELF and o >= _get_other_threshold(level):
             q = "潜能区"
-        elif s >= JOHARI_THRESHOLD_SELF and o < JOHARI_THRESHOLD_OTHER:
+        elif s >= JOHARI_THRESHOLD_SELF and o < _get_other_threshold(level):
             q = "盲区"
         else:
             q = "待发展区"
@@ -234,16 +242,16 @@ def make_johari_chart(
     # 背景象限色块（用矩形 + 透明度模拟）
     bg_shapes = [
         # 待发展区 (左下)
-        dict(type="rect", x0=1, y0=1, x1=JOHARI_THRESHOLD_SELF, y1=JOHARI_THRESHOLD_OTHER,
+        dict(type="rect", x0=1, y0=1, x1=JOHARI_THRESHOLD_SELF, y1=_get_other_threshold(level),
              fillcolor="rgba(229,62,62,0.06)", line=dict(width=0), layer="below"),
         # 盲区 (右下)
-        dict(type="rect", x0=JOHARI_THRESHOLD_SELF, y0=1, x1=5, y1=JOHARI_THRESHOLD_OTHER,
+        dict(type="rect", x0=JOHARI_THRESHOLD_SELF, y0=1, x1=5, y1=_get_other_threshold(level),
              fillcolor="rgba(221,107,32,0.06)", line=dict(width=0), layer="below"),
         # 潜能区 (左上)
-        dict(type="rect", x0=1, y0=JOHARI_THRESHOLD_OTHER, x1=JOHARI_THRESHOLD_SELF, y1=5,
+        dict(type="rect", x0=1, y0=_get_other_threshold(level), x1=JOHARI_THRESHOLD_SELF, y1=5,
              fillcolor="rgba(49,130,206,0.06)", line=dict(width=0), layer="below"),
         # 优势区 (右上)
-        dict(type="rect", x0=JOHARI_THRESHOLD_SELF, y0=JOHARI_THRESHOLD_OTHER, x1=5, y1=5,
+        dict(type="rect", x0=JOHARI_THRESHOLD_SELF, y0=_get_other_threshold(level), x1=5, y1=5,
              fillcolor="rgba(56,161,105,0.06)", line=dict(width=0), layer="below"),
     ]
 
@@ -268,8 +276,8 @@ def make_johari_chart(
         ))
 
     # 阈值参考线
-    fig.add_hline(y=JOHARI_THRESHOLD_OTHER, line=dict(color="#718096", width=1, dash="dash"),
-                  annotation_text=f"他评阈值={JOHARI_THRESHOLD_OTHER}",
+    fig.add_hline(y=_get_other_threshold(level), line=dict(color="#718096", width=1, dash="dash"),
+                  annotation_text=f"他评阈值={_get_other_threshold(level)}",
                   annotation_position="top right")
     fig.add_vline(x=JOHARI_THRESHOLD_SELF, line=dict(color="#718096", width=1, dash="dash"),
                   annotation_text=f"自评阈值={JOHARI_THRESHOLD_SELF}",
@@ -445,11 +453,12 @@ def extract_person(row: pd.Series, norms: dict, questionnaire_items: list[dict])
             o = other_scores[i]
             if s is None or np.isnan(s) or o is None or np.isnan(o):
                 continue
+            ot = _get_other_threshold(ctx["user_level"])
             in_q = (
-                (s >= JOHARI_THRESHOLD_SELF and o >= JOHARI_THRESHOLD_OTHER and qname == "优势区") or
-                (s < JOHARI_THRESHOLD_SELF and o >= JOHARI_THRESHOLD_OTHER and qname == "潜能区") or
-                (s >= JOHARI_THRESHOLD_SELF and o < JOHARI_THRESHOLD_OTHER and qname == "盲区") or
-                (s < JOHARI_THRESHOLD_SELF and o < JOHARI_THRESHOLD_OTHER and qname == "待发展区")
+                (s >= JOHARI_THRESHOLD_SELF and o >= ot and qname == "优势区") or
+                (s < JOHARI_THRESHOLD_SELF and o >= ot and qname == "潜能区") or
+                (s >= JOHARI_THRESHOLD_SELF and o < ot and qname == "盲区") or
+                (s < JOHARI_THRESHOLD_SELF and o < ot and qname == "待发展区")
             )
             if in_q:
                 dims_in_quadrant.append(dim)
@@ -734,6 +743,8 @@ def main():
         row = user_df.iloc[0]
 
         ctx = extract_person(row, norms, qitems)
+        ctx["johari_threshold_self"] = JOHARI_THRESHOLD_SELF
+        ctx["johari_threshold_other"] = _get_other_threshold(args.level)
 
         # 报告元信息
         ctx["report_title"] = "领导力360°反馈报告"
@@ -775,7 +786,7 @@ def main():
             DIM_NAMES, ctx["self_scores"], ctx["superior_scores"],
             ctx["peer_scores"], ctx["subordinate_scores"], ctx["other_scores"])
         ctx["johari_chart_html"] = make_johari_chart(
-            DIM_NAMES, ctx["self_scores"], ctx["other_scores"])
+            DIM_NAMES, ctx["self_scores"], ctx["other_scores"], level=args.level)
 
         out_path = output_dir / args.level / f"report_{uid}.html"
         generate_report(ctx, out_path)

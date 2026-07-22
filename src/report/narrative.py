@@ -337,9 +337,11 @@ def narrative_22(ctx) -> str:
     return "\n".join(parts)
 def narrative_23_opening(ctx) -> str:
     """生成乔哈里视窗开篇（阈值说明 + Q&A 引子）。"""
+    t_self = ctx.get("johari_threshold_self", 4.50)
+    t_other = ctx.get("johari_threshold_other", 4.40)
     return (
         '<p>图中横轴为自评评分，纵轴为他评评分。'
-        '两条虚线分别为自评阈值（<strong>4.50 分</strong>）和他评阈值（<strong>4.40 分</strong>），'
+        f'两条虚线分别为自评阈值（<strong>{t_self:.2f} 分</strong>）和他评阈值（<strong>{t_other:.2f} 分</strong>），'
         '基于全体被评价者的评分中位数确定——高于阈值的评分意味着处于群体的前 50% 区间。</p>'
         '<p>"不知道自己不知道"往往是个人成长的困境。通过比较自我认知与他人反馈，'
         '我们得以了解自己眼中与他人眼中自我的差异——'
