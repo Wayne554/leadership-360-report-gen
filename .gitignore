@@ -19,6 +19,7 @@ data/processed/*
 !data/processed/norm_stats_*.json
 data/norms/
 output/
+!output/draft/
 
 # Environment & secrets
 .env

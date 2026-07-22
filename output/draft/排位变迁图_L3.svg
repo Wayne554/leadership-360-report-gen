@@ -1,0 +1,123 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 950 650" width="950" height="650">
+<rect width="950" height="650" fill="#fafafa"/>
+<text x="475" y="28" text-anchor="middle" font-size="20" font-weight="bold" fill="#1e293b">L3 各评价源维度排位变迁图（含推断排位）</text>
+<text x="145" y="52" text-anchor="middle" font-size="16" font-weight="bold" fill="#334155">本人</text>
+<text x="375" y="52" text-anchor="middle" font-size="16" font-weight="bold" fill="#334155">上级</text>
+<text x="605" y="52" text-anchor="middle" font-size="16" font-weight="bold" fill="#334155">协同方</text>
+<text x="835" y="52" text-anchor="middle" font-size="16" font-weight="bold" fill="#334155">下级</text>
+<line x1="145" y1="60" x2="145" y2="400" stroke="#cbd5e1" stroke-width="1.5"/>
+<line x1="375" y1="60" x2="375" y2="400" stroke="#cbd5e1" stroke-width="1.5"/>
+<line x1="605" y1="60" x2="605" y2="400" stroke="#cbd5e1" stroke-width="1.5"/>
+<line x1="835" y1="60" x2="835" y2="400" stroke="#cbd5e1" stroke-width="1.5"/>
+<text x="115" y="89" text-anchor="middle" font-size="12" fill="#94a3b8">1</text>
+<line x1="130" y1="85" x2="850" y2="85" stroke="#f1f5f9" stroke-width="1"/>
+<text x="115" y="134" text-anchor="middle" font-size="12" fill="#94a3b8">2</text>
+<line x1="130" y1="130" x2="850" y2="130" stroke="#f1f5f9" stroke-width="1"/>
+<text x="115" y="179" text-anchor="middle" font-size="12" fill="#94a3b8">3</text>
+<line x1="130" y1="175" x2="850" y2="175" stroke="#f1f5f9" stroke-width="1"/>
+<text x="115" y="224" text-anchor="middle" font-size="12" fill="#94a3b8">4</text>
+<line x1="130" y1="220" x2="850" y2="220" stroke="#f1f5f9" stroke-width="1"/>
+<text x="115" y="269" text-anchor="middle" font-size="12" fill="#94a3b8">5</text>
+<line x1="130" y1="265" x2="850" y2="265" stroke="#f1f5f9" stroke-width="1"/>
+<text x="115" y="314" text-anchor="middle" font-size="12" fill="#94a3b8">6</text>
+<line x1="130" y1="310" x2="850" y2="310" stroke="#f1f5f9" stroke-width="1"/>
+<text x="115" y="359" text-anchor="middle" font-size="12" fill="#94a3b8">7</text>
+<line x1="130" y1="355" x2="850" y2="355" stroke="#f1f5f9" stroke-width="1"/>
+<line x1="145" y1="130" x2="375" y2="220" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="375" y1="220" x2="605" y2="130" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="605" y1="130" x2="835" y2="85" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="145" y1="265" x2="375" y2="175" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="375" y1="175" x2="605" y2="220" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="605" y1="220" x2="835" y2="310" stroke="#ef4444" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="145" y1="355" x2="375" y2="355" stroke="#6b7280" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="375" y1="355" x2="605" y2="355" stroke="#6b7280" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="605" y1="355" x2="835" y2="355" stroke="#6b7280" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="145" y1="85" x2="375" y2="85" stroke="#0ea5e9" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="375" y1="85" x2="605" y2="85" stroke="#0ea5e9" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="605" y1="85" x2="835" y2="130" stroke="#0ea5e9" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="145" y1="175" x2="375" y2="130" stroke="#10b981" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="375" y1="130" x2="605" y2="175" stroke="#10b981" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="605" y1="175" x2="835" y2="175" stroke="#10b981" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="145" y1="310" x2="375" y2="265" stroke="#8b5cf6" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="375" y1="265" x2="605" y2="220" stroke="#8b5cf6" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="605" y1="220" x2="835" y2="265" stroke="#8b5cf6" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="145" y1="220" x2="375" y2="310" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="375" y1="310" x2="605" y2="265" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round"/>
+<line x1="605" y1="265" x2="835" y2="220" stroke="#ec4899" stroke-width="2.5" stroke-linecap="round"/>
+<circle cx="145" cy="85" r="5" fill="#0ea5e9" stroke="#fff" stroke-width="1.5"/>
+<text x="145" y="88" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">1</text>
+<circle cx="375" cy="85" r="5" fill="#0ea5e9" stroke="#fff" stroke-width="1.5"/>
+<text x="375" y="88" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">1</text>
+<circle cx="605" cy="85" r="5" fill="#0ea5e9" stroke="#fff" stroke-width="1.5"/>
+<text x="605" y="88" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">1</text>
+<circle cx="835" cy="130" r="5" fill="#0ea5e9" stroke="#fff" stroke-width="1.5"/>
+<text x="835" y="133" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">2</text>
+<circle cx="145" cy="175" r="5" fill="#10b981" stroke="#fff" stroke-width="1.5"/>
+<text x="145" y="178" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">3</text>
+<circle cx="375" cy="130" r="5" fill="#10b981" stroke="#fff" stroke-width="1.5"/>
+<text x="375" y="133" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">2</text>
+<circle cx="605" cy="175" r="5" fill="#10b981" stroke="#fff" stroke-width="1.5"/>
+<text x="605" y="178" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">3</text>
+<circle cx="835" cy="175" r="5" fill="#10b981" stroke="#fff" stroke-width="1.5"/>
+<text x="835" y="178" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">3</text>
+<circle cx="145" cy="130" r="5" fill="#f59e0b" stroke="#fff" stroke-width="1.5"/>
+<text x="145" y="133" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">2</text>
+<circle cx="375" cy="220" r="5" fill="#f59e0b" stroke="#fff" stroke-width="1.5"/>
+<text x="375" y="223" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">4</text>
+<circle cx="605" cy="130" r="5" fill="#f59e0b" stroke="#fff" stroke-width="1.5"/>
+<text x="605" y="133" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">2</text>
+<circle cx="835" cy="85" r="5" fill="#f59e0b" stroke="#fff" stroke-width="1.5"/>
+<text x="835" y="88" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">1</text>
+<circle cx="145" cy="265" r="5" fill="#ef4444" stroke="#fff" stroke-width="1.5"/>
+<text x="145" y="268" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">5</text>
+<circle cx="375" cy="175" r="5" fill="#ef4444" stroke="#fff" stroke-width="1.5"/>
+<text x="375" y="178" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">3</text>
+<circle cx="605" cy="220" r="5" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="3,2"/>
+<text x="613" y="224" font-size="10" fill="#ef4444" font-weight="bold">4*</text>
+<circle cx="835" cy="310" r="5" fill="#ef4444" stroke="#fff" stroke-width="1.5"/>
+<text x="835" y="313" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">6</text>
+<circle cx="145" cy="310" r="5" fill="#8b5cf6" stroke="#fff" stroke-width="1.5"/>
+<text x="145" y="313" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">6</text>
+<circle cx="375" cy="265" r="5" fill="#8b5cf6" stroke="#fff" stroke-width="1.5"/>
+<text x="375" y="268" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">5</text>
+<circle cx="605" cy="220" r="5" fill="#8b5cf6" stroke="#fff" stroke-width="1.5"/>
+<text x="605" y="223" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">4</text>
+<circle cx="835" cy="265" r="5" fill="#8b5cf6" stroke="#fff" stroke-width="1.5"/>
+<text x="835" y="268" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">5</text>
+<circle cx="145" cy="220" r="5" fill="#ec4899" stroke="#fff" stroke-width="1.5"/>
+<text x="145" y="223" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">4</text>
+<circle cx="375" cy="310" r="5" fill="#ec4899" stroke="#fff" stroke-width="1.5"/>
+<text x="375" y="313" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">6</text>
+<circle cx="605" cy="265" r="5" fill="#ec4899" stroke="#fff" stroke-width="1.5"/>
+<text x="605" y="268" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">5</text>
+<circle cx="835" cy="220" r="5" fill="#ec4899" stroke="#fff" stroke-width="1.5"/>
+<text x="835" y="223" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">4</text>
+<circle cx="145" cy="355" r="5" fill="#6b7280" stroke="#fff" stroke-width="1.5"/>
+<text x="145" y="358" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">7</text>
+<circle cx="375" cy="355" r="5" fill="#6b7280" stroke="#fff" stroke-width="1.5"/>
+<text x="375" y="358" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">7</text>
+<circle cx="605" cy="355" r="5" fill="none" stroke="#6b7280" stroke-width="2" stroke-dasharray="3,2"/>
+<text x="613" y="359" font-size="10" fill="#6b7280" font-weight="bold">7*</text>
+<circle cx="835" cy="355" r="5" fill="#6b7280" stroke="#fff" stroke-width="1.5"/>
+<text x="835" y="358" text-anchor="middle" font-size="9" fill="#fff" font-weight="bold">7</text>
+<circle cx="85" cy="445" r="4" fill="#0ea5e9"/>
+<text x="94" y="449" font-size="11" fill="#334155">客户导向</text>
+<circle cx="365" cy="445" r="4" fill="#10b981"/>
+<text x="374" y="449" font-size="11" fill="#334155">追求卓越</text>
+<circle cx="645" cy="445" r="4" fill="#f59e0b"/>
+<text x="654" y="449" font-size="11" fill="#334155">战略思维</text>
+<circle cx="85" cy="467" r="4" fill="#ef4444"/>
+<text x="94" y="471" font-size="11" fill="#334155">发展组织</text>
+<circle cx="365" cy="467" r="4" fill="#8b5cf6"/>
+<text x="374" y="471" font-size="11" fill="#334155">全球视野</text>
+<circle cx="645" cy="467" r="4" fill="#ec4899"/>
+<text x="654" y="471" font-size="11" fill="#334155">创新引领</text>
+<circle cx="85" cy="489" r="4" fill="#6b7280"/>
+<text x="94" y="493" font-size="11" fill="#334155">数智变革</text>
+<circle cx="85" cy="505" r="4" fill="none" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="3,2"/>
+<text x="94" y="509" font-size="11" fill="#64748b">空心/虚线点 = 推断排位（协同方未实际评价此维度）</text>
+<text x="80" y="530" font-size="11" fill="#475569">发展组织（团队管理）：本人5->上级升至3->协同方4*->下级降至6（源于第3-5的中间推定）</text>
+<text x="80" y="548" font-size="11" fill="#475569">数智变革：本人7->上级7->协同方7*->下级7 - 全源共识末位，推定可靠性极高</text>
+<text x="80" y="566" font-size="11" fill="#475569">战略思维：本人2->上级降至4->协同方2->下级升至1 - 最活跃的维度，倒N形</text>
+<text x="80" y="584" font-size="11" fill="#475569">* 推断逻辑：发展组织缺乏协同方可观察渠道，置于追求卓越（成就动机）之后第4位</text>
+</svg>
