@@ -32,8 +32,8 @@ def load_person_eval(person_id: str) -> dict:
 
     return {
         "bottom3_keys": pdata.get("bottom3_keys", []),
-        "quadrant": pdata.get("quadrant", ""),
-        "dims": pdata.get("dims", []),
+        "quadrant": pdata.get("preamble_variant", "standard"),
+        "dims": pdata.get("dimensions", []),
         "excluded": dist_data.get("config", {}).get("exclude_dims", ["数智变革"]),
     }
 

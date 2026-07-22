@@ -748,7 +748,7 @@ def main():
 
         # 报告元信息
         ctx["report_title"] = "领导力360°反馈报告"
-        ctx["report_subtitle"] = f"{args.level} 基层管理者 · 2026年度"
+        ctx["report_subtitle"] = f"{LEVEL_LABELS.get(args.level, args.level)} · 2026年度"
         ctx["report_date"] = "2026年7月"
         ctx["report_year"] = "2026"
         ctx["foreword_html"] = (
@@ -776,7 +776,7 @@ def main():
         dev_section = get_development_section(uid)
         ctx["dev_section"] = dev_section
         ctx["has_dev_section"] = len(dev_section.get("dimensions", [])) > 0
-        ctx["level"] = args.level
+        ctx["level"] = LEVEL_LABELS.get(args.level, args.level)
         ctx["norm_desc"] = narrative.narrative_norm_desc(ctx)
         ctx["excluded_dim_note"] = narrative.narrative_excluded_dim_note(ctx)
 
