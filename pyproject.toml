@@ -1,0 +1,43 @@
+[project]
+name = "leadership-360-feedback"
+version = "0.1.0"
+description = "360° 领导力反馈数据分析与报告生成工具"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "Proprietary" }
+authors = [
+    { name = "OD/TD Team" },
+]
+
+dependencies = [
+    "pandas>=2.0",
+    "numpy>=1.24",
+    "scipy>=1.10",
+    "plotly>=5.15",
+    "jinja2>=3.1",
+    "openpyxl>=3.1",
+    "pyyaml>=6.0",
+    "httpx>=0.25",
+    "pathlib>=1.0.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "black>=23.0",
+    "ruff>=0.1",
+    "mypy>=1.0",
+]
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]

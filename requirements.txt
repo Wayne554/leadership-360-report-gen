@@ -1,0 +1,24 @@
+# Core data processing
+pandas>=2.0
+numpy>=1.24
+scipy>=1.10
+openpyxl>=3.1
+
+# Visualization
+plotly>=5.15
+
+# Reporting
+jinja2>=3.1
+
+# Configuration
+pyyaml>=6.0
+
+# HTTP (RAGFlow API, etc.)
+httpx>=0.25
+
+# Development
+pytest>=7.0
+pytest-cov>=4.0
+black>=23.0
+ruff>=0.1
+mypy>=1.0

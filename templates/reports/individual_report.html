@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{ report_title }} — {{ user_name }}</title>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js" charset="utf-8"></script>
+<style>
+:root {
+  --color-primary: #0f172a;
+  --color-primary-light: #1e3a5f;
+  --color-accent: #0369a1;
+  --color-bg: #f8fafc;
+  --color-surface: #ffffff;
+  --color-border: #e2e8f0;
+  --color-muted: #64748b;
+  --color-text: #1e293b;
+  --color-text-secondary: #475569;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 14px; -webkit-font-smoothing: antialiased; scroll-behavior: smooth; }
+body {
+  font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans SC", system-ui, -apple-system, sans-serif;
+  color: var(--color-text); background: var(--color-bg); line-height: 1.7;
+}
+.container { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+section { margin: 40px 0; }
+.page-break { page-break-before: always; }
+
+/* ===== Info Bar ===== */
+.info-bar {
+  background: var(--color-primary);
+  color: #fff;
+  padding: 14px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  font-size: .88rem;
+  position: relative;
+  z-index: 10;
+}
+.info-bar__left {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+.info-bar__item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+.info-bar__item .label { opacity: .55; font-weight: 400; font-size: .78rem; }
+.info-bar__item .value { font-weight: 600; color: #fff; }
+.info-bar__divider { width: 1px; height: 18px; background: rgba(255,255,255,.2); flex-shrink: 0; }
+.info-bar__confidential {
+  font-size: .75rem; opacity: .45;
+  border: 1px solid rgba(255,255,255,.15);
+  padding: 3px 10px; border-radius: 4px;
+  white-space: nowrap;
+}
+.info-bar__title {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+/* ===== Sticky Nav ===== */
+.sticky-nav {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  padding: 10px 32px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  box-shadow: 0 2px 8px rgba(0,0,0,.04);
+}
+.sticky-nav__tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: .78rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  cursor: pointer;
+  transition: all .15s ease;
+  text-decoration: none;
+}
+.sticky-nav__tag:hover {
+  background: var(--color-accent);
+  color: #fff;
+  border-color: var(--color-accent);
+}
+
+/* ===== Section Headers ===== */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 2px solid var(--color-border);
+}
+.section-header .num {
+  background: var(--color-primary);
+  color: #fff;
+  width: 30px; height: 30px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .82rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.section-header h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+.section-header-l2 {
+  margin-top: 32px;
+  margin-bottom: 14px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--color-border);
+}
+.section-header-l2 h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+/* ===== Foreword ===== */
+.foreword-text { font-size: .9rem; color: var(--color-text-secondary); }
+.foreword-text p { margin-bottom: 10px; }
+
+/* ===== Highlight Cards ===== */
+.highlight-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.highlight-card {
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  box-shadow: 0 1px 3px rgba(0,0,0,.04);
+}
+.highlight-card .label { font-size: .76rem; color: var(--color-muted); margin-bottom: 4px; }
+.highlight-card .value { font-size: 1.35rem; font-weight: 700; color: var(--color-text); }
+.highlight-card .note { font-size: .72rem; color: #94a3b8; margin-top: 2px; }
+
+/* ===== Narrative Text ===== */
+.narrative-section-21 p, .narrative-section-22 p, .narrative-section-24 p {
+  margin-bottom: 10px; line-height: 1.8; color: var(--color-text-secondary);
+}
+.narrative-section-21 ul, .narrative-section-22 ul {
+  margin: 8px 0 12px 20px; color: var(--color-text-secondary);
+}
+.narrative-section-21 li, .narrative-section-22 li {
+  margin-bottom: 6px; line-height: 1.7;
+}
+.narrative-section-21 strong, .narrative-section-22 strong { color: var(--color-primary-light); }
+
+/* ===== Chart ===== */
+.chart-wrapper {
+  background: var(--color-surface);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  padding: 16px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.04);
+}
+.chart-wrapper .chart-title {
+  font-size: .82rem;
+  color: var(--color-muted);
+  margin-bottom: 8px;
+  text-align: center;
+  font-weight: 500;
+}
+.chart-wrapper .js-plotly-plot, .chart-wrapper .plotly-graph-div {
+  max-width: 100% !important;
+  width: 100% !important;
+  height: auto !important;
+}
+
+/* ===== Dimension Tags ===== */
+.dim-list { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.dim-tag {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 4px;
+  font-size: .8rem;
+  font-weight: 600;
+}
+.dim-tag.strength { background: #dcfce7; color: #166534; }
+.dim-tag.potential { background: #dbeafe; color: #1e40af; }
+.dim-tag.blind { background: #ffedd5; color: #9a3412; }
+.dim-tag.dev { background: #fce4ec; color: #9b1c1c; }
+.dim-tag.neutral { background: #f1f5f9; color: var(--color-text); }
+
+/* ===== Insight Box ===== */
+.insight-box {
+  background: #f1f5f9;
+  border-left: 4px solid var(--color-accent);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  padding: 14px 18px;
+  margin: 16px 0;
+  font-size: .86rem;
+  color: var(--color-text-secondary);
+  line-height: 1.8;
+}
+.insight-box strong { color: var(--color-primary-light); }
+.insight-box ul { margin: 6px 0 0 16px; }
+.insight-box li { margin-bottom: 4px; }
+
+/* ===== Johari Quadrant Grid ===== */
+.quadrant-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 20px 0;
+}
+.quadrant-card {
+  border-radius: var(--radius-md);
+  padding: 14px 16px;
+  font-size: .84rem;
+  line-height: 1.7;
+}
+.quadrant-card.q1 { background: #f0fdf4; border: 1px solid #bbf7d0; }
+.quadrant-card.q2 { background: #eff6ff; border: 1px solid #bfdbfe; }
+.quadrant-card.q3 { background: #fff7ed; border: 1px solid #fed7aa; }
+.quadrant-card.q4 { background: #fef2f2; border: 1px solid #fecaca; }
+.quadrant-card .q-label { font-weight: 700; font-size: .9rem; margin-bottom: 4px; }
+.quadrant-card .q-dims { margin: 4px 0; display: flex; flex-wrap: wrap; gap: 4px; }
+.quadrant-card .q-desc { color: var(--color-text-secondary); font-size: .8rem; margin-top: 4px; }
+.quadrant-card .q-advice { color: var(--color-text); font-size: .8rem; margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--color-border); }
+
+/* ===== Comment Codes ===== */
+.profile-box {
+  background: #f1f5f9; border-radius: var(--radius-md);
+  padding: 14px 18px; margin: 12px 0;
+  font-size: .88rem; line-height: 1.8; color: var(--color-text-secondary);
+}
+.profile-box strong { color: var(--color-primary-light); }
+.comment-code-group { margin-bottom: 16px; }
+.comment-code-group h4 {
+  font-size: .9rem; font-weight: 600; color: var(--color-text);
+  margin-bottom: 8px; padding-bottom: 4px;
+  border-bottom: 1px solid var(--color-border);
+}
+.code-card {
+  background: var(--color-surface); border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm); padding: 10px 14px;
+  margin-bottom: 8px; font-size: .84rem; line-height: 1.7;
+}
+.code-card blockquote {
+  margin: 6px 0 0 12px; padding-left: 10px;
+  border-left: 3px solid var(--color-accent);
+  color: var(--color-muted); font-style: italic;
+}
+
+/* ===== Development ===== */
+.dev-preamble { font-size: .9rem; color: var(--color-text-secondary); margin-bottom: 16px; line-height: 1.8; }
+.dev-focus-label {
+  font-weight: 600; font-size: .9rem; color: var(--color-text);
+  margin-bottom: 16px; padding: 8px 14px;
+  background: #f1f5f9; border-radius: var(--radius-sm);
+  border-left: 3px solid var(--color-accent);
+}
+.dev-dim-block {
+  margin-bottom: 20px; padding: 14px 16px;
+  background: var(--color-surface); border: 1px solid var(--color-border);
+  border-radius: var(--radius-md); box-shadow: 0 1px 3px rgba(0,0,0,.04);
+}
+.dev-dim-title {
+  font-size: .95rem; font-weight: 700; color: var(--color-primary-light);
+  margin-bottom: 10px; padding-bottom: 6px;
+  border-bottom: 1px solid var(--color-border);
+}
+.dev-action-list { list-style: none; padding: 0; margin: 0; }
+
+.dev-insight {
+  font-size: .88rem; line-height: 1.7; color: var(--color-text);
+  margin-bottom: 10px; padding: 8px 12px;
+  background: rgba(3,105,161,.06); border-left: 3px solid var(--color-accent);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.dev-quote {
+  font-size: .82rem; line-height: 1.6; color: var(--color-muted);
+  margin-bottom: 10px; padding: 6px 12px 6px 16px;
+  border-left: 2px solid var(--color-border);
+  font-style: italic;
+}
+.dev-action-list li {
+  padding: 5px 0 5px 24px; position: relative;
+  font-size: .85rem; line-height: 1.7; color: var(--color-text-secondary);
+}
+.dev-action-list li .dev-num {
+  position: absolute; left: 0; top: 5px;
+  font-weight: 600; color: var(--color-accent);
+}
+.dev-closing {
+  margin-top: 20px; padding: 12px 16px;
+  background: #f1f5f9; border-radius: var(--radius-sm);
+  font-size: .85rem; color: var(--color-text-secondary); line-height: 1.7;
+}
+
+/* ===== Item Table ===== */
+.item-table-wrapper { margin-bottom: 20px; overflow-x: auto; }
+.item-table {
+  width: 100%; table-layout: fixed; border-collapse: collapse; font-size: .8rem;
+  border: 1px solid var(--color-border); border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.item-table thead th {
+  background: #f1f5f9; padding: 8px 10px;
+  text-align: center; font-weight: 600; font-size: .78rem;
+  color: var(--color-text); border-bottom: 2px solid var(--color-border);
+  white-space: nowrap;
+}
+.item-table thead th:nth-child(1) { text-align: center; width: 36px; }
+.item-table thead th:nth-child(2) { width: 14%; text-align: center; }
+.item-table thead th:nth-child(3) { text-align: left; width: 30%; }
+.item-table thead th:nth-child(n+4):nth-child(-n+7) { width: 11%; }
+.item-table tbody td {
+  padding: 6px 10px; text-align: center;
+  border-bottom: 1px solid #f1f5f9; vertical-align: middle;
+}
+.item-table tbody td:nth-child(3) { text-align: left; color: var(--color-text-secondary); }
+.item-table tbody tr:hover td { background: #f8fafc; }
+.item-table .na { color: #cbd5e0; font-style: italic; font-size: .76rem; }
+.item-table .score-col { text-align: center; font-weight: 500; }
+.item-table .score-empty { color: #cbd5e0; }
+
+/* ===== Comment Table (3.2) ===== */
+.appendix-comment-group { margin-bottom: 24px; }
+.appendix-comment-group h4 {
+  font-size: .9rem; font-weight: 600; color: var(--color-text);
+  margin-bottom: 10px; padding-bottom: 4px;
+  border-bottom: 1px solid var(--color-border);
+}
+.appendix-comment-group .comment-count {
+  font-weight: 400; font-size: .78rem; color: var(--color-muted);
+}
+.comment-list-table {
+  width: 100%; border-collapse: collapse; font-size: .8rem;
+  border: 1px solid var(--color-border); border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.comment-list-table th {
+  background: #f1f5f9; padding: 7px 10px;
+  text-align: center; font-weight: 600; font-size: .78rem;
+  color: var(--color-text); border-bottom: 2px solid var(--color-border);
+}
+.comment-list-table th:first-child { width: 40px; }
+.comment-list-table th:nth-child(2) { text-align: left; }
+.comment-list-table td {
+  padding: 7px 10px; text-align: center;
+  border-bottom: 1px solid #f1f5f9; vertical-align: middle;
+}
+.comment-list-table td:first-child { color: #94a3b8; font-size: .76rem; }
+.comment-list-table td:nth-child(2) { text-align: left; color: var(--color-text-secondary); line-height: 1.6; }
+.comment-list-table tr:hover td { background: #f8fafc; }
+
+/* ===== Footer ===== */
+.report-footer {
+  margin-top: 60px; padding: 20px 0;
+  border-top: 1px solid var(--color-border);
+  text-align: center; font-size: .76rem; color: #94a3b8; line-height: 1.8;
+}
+
+/* ===== Print ===== */
+
+/* ===== Chart Interaction ===== */
+.chart-wrapper .chart-hint {
+  font-size: .72rem; color: #94a3b8; text-align: center;
+  margin-top: 6px; padding-top: 6px; border-top: 1px solid #f1f5f9;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.chart-wrapper .chart-hint .reset-btn {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 2px 10px; border-radius: 4px; font-size: .72rem;
+  background: #f1f5f9; color: #64748b; cursor: pointer;
+  border: 1px solid #e2e8f0; transition: all .15s ease;
+  text-decoration: none;
+}
+.chart-wrapper .chart-hint .reset-btn:hover {
+  background: #e2e8f0; color: #1e293b;
+}
+
+@media print {
+  body { background: #fff; color: #000; }
+  .sticky-nav { display: none; }
+  .info-bar { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .chart-wrapper { box-shadow: none; border: 1px solid #d1d5db; break-inside: avoid; }
+  .highlight-card { box-shadow: none; border: 1px solid #d1d5db; }
+  .page-break { page-break-before: always; }
+  .container { max-width: 100%; padding: 0 20px; }
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .container { padding: 0 16px; }
+  .info-bar { padding: 10px 16px; flex-direction: column; align-items: flex-start; gap: 6px; }
+  .info-bar__left { flex-wrap: wrap; gap: 8px; }
+  .info-bar__divider { display: none; }
+  .sticky-nav { padding: 8px 16px; gap: 3px; }
+  .sticky-nav__tag { font-size: .72rem; padding: 4px 8px; }
+  .highlight-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .quadrant-grid { grid-template-columns: 1fr; gap: 10px; }
+}
+</style>
+</head>
+<body>
+
+<!-- INFO BAR -->
+<div class="report-header" style="position:sticky;top:0;z-index:30;"><div class="info-bar">
+  <div class="info-bar__left">
+    <span class="info-bar__title">{{ report_title }}</span>
+    <span class="info-bar__divider"></span>
+    <span class="info-bar__item"><span class="label">编号</span><span class="value">{{ user_id }}</span></span>
+    <span class="info-bar__item"><span class="label">组织</span><span class="value">{{ user_org }}</span></span>
+    <span class="info-bar__item"><span class="label">层级</span><span class="value">{{ user_level_label }}</span></span>
+    <span class="info-bar__item"><span class="label">日期</span><span class="value">{{ report_date }}</span></span>
+  </div>
+  <span class="info-bar__confidential">本报告仅供被评价人及其上级 / HRBP 参考，请勿外传</span>
+</div>
+
+<!-- STICKY NAV -->
+<nav class="sticky-nav" style="position:static;">
+  <a href="#sec-f" class="sticky-nav__tag">前言</a>
+  <a href="#sec-21" class="sticky-nav__tag">2.1 概览</a>
+  <a href="#sec-22" class="sticky-nav__tag">2.2 源对比</a>
+  <a href="#sec-23" class="sticky-nav__tag">2.3 乔哈里</a>
+  <a href="#sec-24" class="sticky-nav__tag">2.4 评语</a>
+  <a href="#sec-25" class="sticky-nav__tag">2.5 建议</a>
+  <a href="#sec-31" class="sticky-nav__tag">3.1 得分</a>
+  <a href="#sec-32" class="sticky-nav__tag">3.2 评语原文</a>
+</nav></div>
+
+<div class="container">
+
+<section id="sec-f">
+<div class="section-header"><span class="num">1</span><h2>前言</h2></div>
+<div class="foreword-text">{{ foreword_html }}</div>
+</section>
+
+<section>
+<div class="section-header"><span class="num">2</span><h2>报告主体</h2></div>
+
+<h3 class="section-header-l2" id="sec-21" style="margin-top:0;">2.1 领导力概览 — 七维度整体评分</h3>
+
+<div class="highlight-grid">
+  <div class="highlight-card"><div class="label">自评总体均值</div><div class="value">{{ "%.2f"|format(self_overall_mean) }}</div><div class="note">常模自评 P50: {{ "%.2f"|format(norm_self_p50_overall) }}</div></div>
+  <div class="highlight-card"><div class="label">他评总体均值</div><div class="value">{{ "%.2f"|format(other_overall_mean) }}</div><div class="note">常模他评 P50: {{ "%.2f"|format(norm_other_p50_overall) }}</div></div>
+  <div class="highlight-card"><div class="label">自评-他评差距</div><div class="value">{{ "%+.2f"|format(self_other_gap) }}</div><div class="note">正数表示自评高于他评</div></div>
+  <div class="highlight-card"><div class="label">评价参与度</div><div class="value">{{ rater_total }} 人</div><div class="note">上级 {{ rater_counts.上级}}人 · 协同方 {{ rater_counts.协同方}}人 · 下级 {{ rater_counts.下级}}人</div></div>
+</div>
+
+{% if radar_chart_html %}<div class="chart-wrapper"><div class="chart-title">七维度评分雷达图</div>{{ radar_chart_html | safe }}</div>{% endif %}
+
+<div class="narrative-section-21">{{ narrative_21_html | safe }}</div>
+
+<p><strong>优势维度</strong>：他评得分高于群体常模中位数的维度</p>
+<div class="dim-list">{% for d in strength_dims %}<span class="dim-tag strength">{{ d }}</span>{% endfor %}</div>
+<p><strong>待发展维度</strong>：他评得分低于群体常模中位数的维度</p>
+<div class="dim-list">{% for d in development_dims %}<span class="dim-tag dev">{{ d }}</span>{% endfor %}</div>
+{% if max_gap_dim %}<p><strong>最大认知差距</strong> <span class="dim-tag blind">{{ max_gap_dim }}</span> ({{ "%+.2f"|format(max_gap_value) }})</p>{% endif %}
+
+<div class="page-break"></div>
+
+<h3 class="section-header-l2" id="sec-22">2.2 各评价来源评分对比</h3>
+
+{% if line_chart_html %}<div class="chart-wrapper"><div class="chart-title">维度评分折线图 — 横轴=评分 纵轴=维度</div>{{ line_chart_html | safe }}<div class="chart-hint"><span>💡 提示：可拖拽平移查看</span><a class="reset-btn" href="javascript:void(0)" onclick="Plotly.relayout(this.closest('.chart-wrapper').querySelector('.js-plotly-plot'), {xaxis:{autorange:true},yaxis:{autorange:true}})">↺ 复位</a></div></div>{% endif %}
+<div class="narrative-section-22">{{ narrative_22_html | safe }}</div>
+
+<div class="page-break"></div>
+
+<h3 class="section-header-l2" id="sec-23">2.3 乔哈里视窗</h3>
+
+{% if johari_chart_html %}<div class="chart-wrapper"><div class="chart-title">四象限分布</div>{{ johari_chart_html | safe }}<div class="chart-hint"><span>💡 提示：可拖拽平移查看</span><a class="reset-btn" href="javascript:void(0)" onclick="Plotly.relayout(this.closest('.chart-wrapper').querySelector('.js-plotly-plot'), {xaxis:{autorange:true},yaxis:{autorange:true}})">↺ 复位</a></div></div>{% endif %}
+{{ narrative_23_opening_html | safe }}
+
+<div class="quadrant-grid">
+{% for qname, qdata in johari_quadrants.items() %}
+<div class="quadrant-card {{ qdata.css_class }}">
+  <div class="q-label" style="color:{{ qdata.color }}">{{ qname }}</div>
+  <div class="q-dims">{% if qdata.dims %}{% for d in qdata.dims %}<span class="dim-tag {{ qdata.tag_class }}">{{ d }}</span> {% endfor %}{% else %}<span style="color:#94a3b8;">—</span>{% endif %}</div>
+  <div class="q-desc">{{ qdata.description }}</div>
+  {% if qdata.dims %}<div class="q-advice">{{ qdata.advice }}</div>{% endif %}
+</div>
+{% endfor %}
+</div>
+
+<div class="page-break"></div>
+
+<h3 class="section-header-l2" id="sec-24">2.4 开放式评语概括</h3>
+
+<div class="narrative-section-24">
+{{ narrative_24_intro_html | safe }}
+{% if comment_profile %}<div class="profile-box"><p><strong>管理者画像</strong></p><p>{{ comment_profile }}</p></div>{% endif %}
+{% if comment_axial_codes %}{% for group in comment_axial_codes %}
+<div class="comment-code-group"><h4>{{ group.label }}</h4>{% if group.label == "优势项主题" %}<p style="font-size:.86rem;color:var(--color-text-secondary);margin-bottom:10px;line-height:1.8;">有多位评价人对您所展现出的{% for code in group.codes %}<strong>{{ code.name }}</strong>{% if not loop.last %}、{% endif %}{% endfor %}给予了认可，包括：</p>{% elif group.label == "待发展项主题" %}<p style="font-size:.86rem;color:var(--color-text-secondary);margin-bottom:10px;line-height:1.8;">同时，还有多位评价人认为您主要在{% for code in group.codes %}<strong>{{ code.name }}</strong>{% if not loop.last %}、{% endif %}{% endfor %}等方面的表现可能低于他们对您的预期，包括：</p>{% endif %}{% for code in group.codes %}
+<div class="code-card"><p><strong>{{ code.name }}</strong> ({{ code.count }}次)</p>{% if code.rep_quote %}<blockquote>"{{ code.rep_quote }}"</blockquote>{% endif %}</div>
+{% endfor %}</div>
+{% endfor %}{% endif %}
+</div>
+
+<div class="page-break"></div>
+
+<h3 class="section-header-l2" id="sec-25">2.5 发展行动建议</h3>
+
+{% if dev_section %}
+<p class="dev-preamble">{{ dev_section.preamble }}</p>
+<p class="dev-focus-label">建议您首先聚焦以下 3 个维度{{ excluded_dim_note | safe }}：</p>
+{% for dim in dev_section.dimensions %}
+<div class="dev-dim-block">
+  <h4 class="dev-dim-title">{{ CJK_NUMS[loop.index0] }}. {{ dim.name }}</h4>
+  {% if dim.is_hybrid %}
+  <div class="dev-insight">{{ dim.insight | safe }}</div>
+  {% if dim.quote %}<div class="dev-quote">{{ dim.quote }}</div>{% endif %}
+  {% endif %}
+  <ul class="dev-action-list">{% for action in dim.actions %}
+    <li><span class="dev-num">{{ chr(0x2460 + loop.index0) }}</span> {{ action }}</li>{% endfor %}
+  </ul>
+</div>
+{% endfor %}
+<div class="dev-closing">{{ narrative_25_closing_html | safe }}</div>
+{% endif %}
+
+</section>
+
+<div class="page-break"></div>
+
+<section>
+<div class="section-header"><span class="num">3</span><h2>附录</h2></div>
+
+<h3 class="section-header-l2" id="sec-31">3.1 各评价条目得分明细</h3>
+<p style="font-size:.82rem;color:var(--color-muted);margin-bottom:14px;">以下为各维度下属条目的分评价源得分。</p>
+
+{% if item_tables %}{% for dim_table in item_tables %}
+<div class="item-table-wrapper">
+<table class="item-table">
+<thead><tr>
+  <th>序号</th><th>领导力维度</th><th>评价条目</th>
+  <th>本人<br><span style="font-weight:400;color:#94a3b8;">&nbsp;</span></th>
+  <th>上级<br><span style="font-weight:400;color:#94a3b8;">({{ dim_table.counts.上级 }}人)</span></th>
+  <th>协同方<br><span style="font-weight:400;color:#94a3b8;">({{ dim_table.counts.协同方 }}人)</span></th>
+  <th>下级<br><span style="font-weight:400;color:#94a3b8;">({{ dim_table.counts.下级 }}人)</span></th>
+</tr></thead>
+<tbody>{% for item in dim_table.rows %}
+<tr>
+  <td>{{ item.no }}</td>
+  <td>{{ dim_table.dimension }}</td>
+  <td>{{ item.text }}</td>
+  <td class="score-col">{% if item.本人 is not none %}{{ "%.2f"|format(item.本人) }}{% else %}<span class="score-empty">—</span>{% endif %}</td>
+  <td class="score-col">{% if item.上级 is not none %}{{ "%.2f"|format(item.上级) }}{% else %}<span class="score-empty">—</span>{% endif %}</td>
+  <td class="score-col">{% if item.协同方_na %}<span class="na">协同方不评价</span>{% elif item.协同方 is not none %}{{ "%.2f"|format(item.协同方) }}{% else %}<span class="score-empty">—</span>{% endif %}</td>
+  <td class="score-col">{% if item.下级 is not none %}{{ "%.2f"|format(item.下级) }}{% else %}<span class="score-empty">—</span>{% endif %}</td>
+</tr>{% endfor %}
+</tbody></table></div>{% endfor %}
+{% else %}
+<div style="background:#f8fafc;border:2px dashed var(--color-border);border-radius:8px;padding:32px;text-align:center;color:var(--color-muted);font-size:.86rem;"><p>条目级数据正在生成中。</p></div>
+{% endif %}
+
+<div class="page-break"></div>
+
+<h3 class="section-header-l2" id="sec-32">3.2 开放式评语原文列表</h3>
+<p style="font-size:.82rem;color:var(--color-muted);margin-bottom:14px;">以下为原始评语汇总，已去除无效内容。评语按评价来源和类型分组展示。</p>
+
+{% if appendix_has_comments %}
+{% for comment_group in appendix_comments_by_source %}
+<div class="appendix-comment-group">
+  <h4>{{ comment_group.label }} <span class="comment-count">({{ comment_group.comments|length }} 条)</span></h4>
+  <table class="comment-list-table">
+    <thead><tr><th>序号</th><th>原始开放式评语</th></tr></thead>
+    <tbody>{% for comment in comment_group.comments %}
+      <tr><td>{{ loop.index }}</td><td>{{ comment }}</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>{% endfor %}
+<p style="font-size:.76rem;color:#94a3b8;margin-top:4px;">显示内容中已去除"无"/"暂无"等无效反馈。</p>
+{% else %}
+<div style="background:#f8fafc;border:2px dashed var(--color-border);border-radius:8px;padding:32px;text-align:center;color:var(--color-muted);font-size:.86rem;"><p>开放式评语列表内容待补充。</p></div>
+{% endif %}
+
+</section>
+
+<div class="page-break"></div>
+
+<section>
+<div class="section-header"><span class="num">4</span><h2>注释</h2></div>
+<p style="font-size:.82rem;color:var(--color-muted);line-height:1.8;">
+<sup style="color:#64748b;font-size:.72rem;">[1]</sup> <strong>常模</strong>（Norm）是通过对所有参与本次年度360°领导力反馈的{{ level }}管理者在各领导力维度上的评分进行统计后，形成的群体分布基准。个体报告中的所有比较均基于此常模。<br>
+<sup style="color:#64748b;font-size:.72rem;">[2]</sup> 由于本报告聚焦于领导力领域的自我发展与提升，<strong>数智变革-加强数字应用</strong>并未纳入优先发展项之中。请参考公司对于AI/数字素养（管理者）相关要求或期望。
+</p>
+</section>
+
+</div>
+
+<div class="report-footer">
+  <p>报告由领导力360°反馈系统自动生成 · {{ report_date }}</p>
+  <p>基于{{ report_year }}年度360°领导力评估数据</p>
+</div>
+
+</body>
+</html>

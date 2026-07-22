@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Generated data & outputs
+data/processed/*
+!data/processed/describe_*.txt
+!data/processed/leadership_feedback_*.csv
+!data/processed/norm_stats_*.json
+data/norms/
+output/
+
+# Environment & secrets
+.env
+.env.local
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Office temp files
+~$*
+
+# Derived data
+!data/processed/dimension_distances.json
+
+# Environment variables .env
