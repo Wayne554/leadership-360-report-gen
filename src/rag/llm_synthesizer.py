@@ -29,28 +29,31 @@ DEEPSEEK_MODEL = "deepseek-v4-flash"
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 SUGGESTIONS_DIR = PROJECT_ROOT / "data" / "processed" / "rag_cache"
 
-_SYSTEM_PROMPT = """你是一位资深领导力发展专家与高管教练。你的任务是基于一位管理者在360°反馈中暴露出的待发展维度、他人的开放式评语，以及从权威领导力发展手册中检索到的相关参考内容，为该管理者撰写个性化的发展洞察。
+_SYSTEM_PROMPT = """你是一位资深领导力发展专家与高管教练。你的任务是基于一位管理者在360°反馈中暴露出的待发展维度、他人的开放式评语、评语编码关键词，以及从权威领导力发展手册中检索到的相关参考内容，为该管理者撰写个性化的发展洞察和行为化举措。
 
 请针对以下每个待发展维度，生成：
-1. insight（发展洞察）：一段3-5句的教练式引导文字，结合参考内容进行有温度的启发
-2. quote（引语）：从参考内容中选取一句最相关的原文作为引语，注明出处
+1. insight（发展洞察）：一段3-5句的教练式引导文字，结合参考内容和评语关键词进行有温度的启发
+2. actions（行为化举措）：基于参考内容和评语关键词，为该管理者生成5条个性化的行为化发展举措，每条以一个具体行动描述，用"你"字开头，避免空洞套话
+3. quote（引语）：从参考内容中选取一句最相关的原文作为引语，注明出处
 
 要求：
-- 洞察要结合该管理者的具体反馈情景，避免通用套话
+- 洞察要结合该管理者的具体反馈情景和评语编码关键词，避免通用套话
+- 行为化举措要个性化，紧扣评语中暴露的具体发展机会
 - 语言风格：专业、温暖、教练式，像一位资深HRBP在娓娓道来
 - 严格基于给出的参考内容，不要虚构或补充外部信息
+
+重要：输出 JSON 的维度名必须严格与上文「待发展维度与参考内容」中列出的 ### 标题完全一致，不可修改、缩写或替换为其他名称。
 
 输出格式（严格JSON，不要其他内容）：
 {
   "dimensions": {
     "维度名": {
       "insight": "...（3-5句的发展洞察）",
+      "actions": ["举措1", "举措2", "举措3"],
       "quote": "——《来源书名》"
     }
   }
 }"""
-
-
 def _build_user_message(person_id: str, context: dict) -> str:
     lines = [f"## 管理者信息\n工号：{person_id}"]
     cp = context.get("comment_profile", {})
@@ -62,6 +65,23 @@ def _build_user_message(person_id: str, context: dict) -> str:
         lines.append(f"待发展领域：{'、'.join(cp['development_areas'])}")
     lines.append("")
     lines.append("## 待发展维度与参考内容")
+    # Keyword context from comment coding (Phase 0.2)
+    axial = cp.get("axial_codes", {})
+    sc = axial.get("strength", []) or []
+    dc = axial.get("development", []) or []
+    if sc or dc:
+        kw_parts = []
+        for codes, label in [(sc, "优势"), (dc, "待发展")]:
+            for code in codes:
+                name = code.get("name", "")
+                count = code.get("count", 0)
+                subs = code.get("sub_codes", [])
+                if subs:
+                    kw_parts.append(f"{name}({count}次, 含{"、".join(subs)})")
+                else:
+                    kw_parts.append(f"{name}({count}次)")
+        lines.append(f"评语编码：{'；'.join(kw_parts)}")
+
     for dim_name, dim_data in context.get("dimensions", {}).items():
         lines.append("")
         lines.append(f"### {dim_name}")
@@ -82,7 +102,7 @@ def _call_deepseek(messages: list, temperature: float = 0.3) -> str | None:
                 model=DEEPSEEK_MODEL,
                 messages=messages,
                 temperature=temperature,
-                max_tokens=2048,
+                max_tokens=4096,
                 response_format={"type": "json_object"},
             )
             return resp.choices[0].message.content
@@ -118,6 +138,24 @@ def synthesize_suggestions(person_id: str, context: dict | None = None) -> dict 
         return None
     try:
         result = json.loads(resp)
+        # Map shortened dimension keys back to full names
+        ctx_dims = context.get("dimensions", {})
+        if ctx_dims and isinstance(result.get("dimensions"), dict):
+            expected = list(ctx_dims.keys())
+            mapped = {}
+            for short_key, val in result["dimensions"].items():
+                # 1) Prefix match (most common: LLM drops subtitle after dash)
+                matched = [k for k in expected if k.startswith(short_key)]
+                if not matched:
+                    # 2) Word-level match: if every word in short_key appears in a context key
+                    words = short_key.replace("-", " ").replace("&", " ").split()
+                    matched = [k for k in expected if all(w in k for w in words)]
+                if matched:
+                    mapped[matched[0]] = val
+                else:
+                    mapped[short_key] = val
+            result["dimensions"] = mapped
+
     except json.JSONDecodeError:
         m = re.search(r'```(?:json)?\s*([\s\S]*?)```', resp)
         if m:

@@ -175,6 +175,9 @@ def get_development_section(person_id):
             dim_rag = rag_suggestions.get("dimensions", {}).get(key, {})
             if dim_rag:
                 dim_entry["insight"] = dim_rag.get("insight", "")
+                # Phase 0.4: prefer LLM-generated actions over pre-written
+                if "actions" in dim_rag:
+                    dim_entry["actions"] = dim_rag["actions"]
                 dim_entry["quote"] = _sanitize_quote(dim_rag.get("quote", ""))
                 dim_entry["is_hybrid"] = True
             else:

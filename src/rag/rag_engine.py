@@ -39,41 +39,82 @@ def load_person_eval(person_id: str) -> dict:
 
 
 def load_comment_profile(person_id: str) -> dict:
-    """Load encoded comment profile for the person."""
+    """Load encoded comment profile for the person.
+
+    Enhanced v2: injects full axial_codes + flattened keywords into comment_profile
+    so llm_synthesizer gets rich per-user keyword context for personalized actions.
+    """
     path = COMMENT_DIR / f"{person_id}_encoded.json"
     if not path.exists():
-        return {"profile": "", "top_strengths": [], "development_areas": []}
+        return {
+            "profile": "",
+            "top_strengths": [],
+            "development_areas": [],
+            "axial_codes": {},
+            "top_keywords": [],
+            "development_keywords": [],
+        }
 
     with open(path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
+    axial = data.get("axial_codes", {})
+    strength_codes = axial.get("strength", []) or []
+    dev_codes = axial.get("development", []) or []
+
+    # Flatten sub_codes into keyword lists (preserve order, deduplicate)
+    seen_keywords: set[str] = set()
+    top_keywords: list[str] = []
+    for sc in strength_codes:
+        for sub in sc.get("sub_codes", []):
+            sub_s = sub.strip()
+            if sub_s and sub_s not in seen_keywords:
+                seen_keywords.add(sub_s)
+                top_keywords.append(sub_s)
+
+    seen_dev: set[str] = set()
+    dev_keywords: list[str] = []
+    for dc in dev_codes:
+        for sub in dc.get("sub_codes", []):
+            sub_s = sub.strip()
+            if sub_s and sub_s not in seen_dev:
+                seen_dev.add(sub_s)
+                dev_keywords.append(sub_s)
+
     return {
-        "profile": data.get("profile", ""),
+        "profile": data.get("profile_text", ""),
         "top_strengths": [
-            a.get("name", "") for a in (data.get("top_axial", []) or [])[:3]
+            a.get("name", "") for a in strength_codes[:3]
         ],
         "development_areas": [
-            a.get("name", "") for a in (data.get("development_axial", []) or [])[:2]
+            a.get("name", "") for a in dev_codes[:2]
         ],
+        "axial_codes": axial,
+        "top_keywords": top_keywords[:15],
+        "development_keywords": dev_keywords[:10],
     }
-
-
 def search_dimension_chunks(client: RagflowClient, dimension: str, top_k: int = 3) -> list[dict]:
-    """Multi-query search for one dimension, deduplicated."""
+    """Multi-query search for one dimension, deduplicated with quality filter."""
     queries = DIMENSION_QUERIES.get(dimension, [dimension])
     seen: set[str] = set()
     all_chunks: list[dict] = []
+    fetch_k = top_k + 2  # fetch extra to allow for filtering short chunks
 
     for query in queries:
         try:
-            chunks = client.search(query, top_k=top_k, use_cache=True)
+            chunks = client.search(query, top_k=fetch_k, use_cache=True)
         except Exception:
             chunks = []
         for c in chunks:
             cid = c.get("id", "") or c.get("chunk_id", "")
-            if cid and cid not in seen:
-                seen.add(cid)
-                all_chunks.append(c)
+            if not cid or cid in seen:
+                continue
+            # Filter out short/fragmentary chunks (TOC pages, index lines, etc.)
+            content = c.get("content", "").strip()
+            if len(content) < 100:
+                continue
+            seen.add(cid)
+            all_chunks.append(c)
 
     all_chunks.sort(key=lambda x: x.get("similarity", 0) or 0, reverse=True)
     return all_chunks[:top_k]
@@ -141,3 +182,4 @@ def load_context(person_id: str) -> dict | None:
         return None
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
+

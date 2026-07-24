@@ -8,49 +8,60 @@ RAGFLOW_API_KEY = "ragflow-G4VpxJz4hQRtBaMbByv9OMbHsKxD_KwdSJeU6DxwvQ4"
 
 DATASET_TALENT_DEV = "bdc4a99a731911f18782a7f5afb3e03f"
 DATASET_LEADERSHIP_DEV = "347f2d5e731911f18782a7f5afb3e03f"
-ALL_DATASETS = [DATASET_TALENT_DEV, DATASET_LEADERSHIP_DEV]
+ALL_DATASETS = [DATASET_TALENT_DEV]
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 RAG_CACHE_DIR = PROJECT_ROOT / "data" / "processed" / "rag_cache"
 
 TOP_K = 5
-SIMILARITY_THRESHOLD = 0.2
+SIMILARITY_THRESHOLD = 0.5
 
 DIMENSION_QUERIES = {
     "战略思维-科学决策": [
         "strategic thinking decision making development suggestions for managers",
         "make sound decisions strategic planning leadership development",
         "提高战略思维和科学决策能力 管理者发展建议",
+        "inspire a shared vision communicate future direction strategic leadership",  # LC
+        "leadership pipeline strategic thinking business manager level transition",  # LP
     ],
     "创新引领-持续精进": [
         "leverage innovation creative thinking continuous improvement managers",
         "stimulate innovation in teams foster creative thinking development",
         "创新引领持续改进 管理者创新力提升建议",
+        "challenge the process experiment risk taking innovation leadership practices",  # LC
     ],
     "全球视野-管理复杂情况": [
         "global perspective managing complexity ambiguity leadership",
         "manage complex situations cross-cultural development for managers",
         "全球视野 管理复杂情况 复杂问题解决能力发展",
+        "challenge the process seek opportunities change complex ambiguous environment",  # LC
     ],
     "客户导向-珍视客户": [
         "customer focus value customers build customer relationships",
         "customer orientation service excellence for managers",
         "客户导向 珍视客户 客户关系管理发展建议",
+        "customer focus build relationships enable others to act foster collaboration",  # LC
     ],
     "数智变革-加强数字应用": [
         "digital transformation technology change for managers",
         "leading technology adoption data-driven leadership",
         "数智变革 数字应用 数字化转型管理者发展建议",
+        "challenge the process experiment new technology digital adoption innovation",  # LC
     ],
     "发展组织-带兵打仗": [
         "developing others talent development coaching mentoring",
         "build team capability develop subordinates leadership",
         "发展组织 培养下属 团队能力建设管理者发展建议",
+        "develop subordinates strengthen others enable others to act leadership capabilities",  # LC
+        "encourage the heart recognize contributions celebrate wins team culture",  # LC
+        "leadership pipeline different levels transitions develop managers time application",  # LP
     ],
     "追求卓越-高效执行": [
         "execution excellence drive results performance management",
         "achieve goals accountability follow-through managers",
         "高效执行 追求卓越 执行力提升发展建议",
+        "model the way clarify values set example execution accountability leadership",  # LC
+        "leadership pipeline time management skill development different level priorities",  # LP
     ],
 }
 
