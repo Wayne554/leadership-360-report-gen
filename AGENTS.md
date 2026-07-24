@@ -2,7 +2,7 @@
 title: AGENTS.md
 tags: [project, system, rules]
 date: 2026-07-20
-version: 1.11
+version: 1.12
 ---
 
 # AGENTS.md — 领导力360°反馈项目系统规则
@@ -123,7 +123,8 @@ leadership-360-feedback/
 │   ├── 09-评语编码方案与管线设计.md
 │   ├── 10-评语编码LLM系统Prompt.md
 │   ├── 11-L3L4乔哈里阈值选择分析.md
-│   └── 12-群体报告图表规格说明书.md
+│   ├── 12-群体报告图表规格说明书.md
+│   └── 13-发展建议管线增强方案.md
 ├── notes/                    ← 工作记忆与运营笔记
 │   ├── 工作记忆.md
 │   ├── 关键决策日志.md
