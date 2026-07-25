@@ -312,6 +312,22 @@ def _safe(val):
     return val
 
 
+
+def _clean_rep_quote(q: str) -> str:
+    """评语引用清洗：去除 [来源] 标记和编号前缀。"""
+    if not q:
+        return q
+    t = q.strip()
+    if t.startswith(chr(91)):
+        close = t.find(chr(93))
+        if 0 <= close < 10:
+            t = t[close+1:].strip()
+    i = 0
+    while i < len(t) and (t[i].isdigit() or t[i] in (chr(46), chr(0x3001), chr(32), chr(0xFF09))):
+        i += 1
+    t = t[i:].strip()
+    return t
+
 def extract_person(row: pd.Series, norms: dict, questionnaire_items: list[dict]) -> dict:
     """从一行数据提取模板上下文。"""
     ctx = {}
@@ -435,17 +451,17 @@ def extract_person(row: pd.Series, norms: dict, questionnaire_items: list[dict])
     johari = {}
     for qname, qkey, qclass, qcolor, qdesc, qadv in [
         ("优势区", "q1", "strength", "#38a169",
-         "那些您认为自己非常擅长、且他人也非常认可的能力。",
-         "更多的运用这些能力，思考它们如何帮助您提升待发展区的能力，以及是否可以在这些领域为他人提供指导。"),
+         "那些您认为自己非常擅长、且他人也非常认可的能力",
+         "更多的运用这些能力，思考它们如何帮助你提升待发展区的能力，以及是否可以在这些领域为他人提供指导？"),
         ("潜能区", "q2", "potential", "#3182ce",
-         "那些他人非常认可、但您本人认为有所欠缺的能力。",
-         "更多的运用这些能力，思考如何令它们取得更大的效果，是否可以收集更多的反馈以提升自己的信心。"),
+         "那些他人非常认可，但我们认为有所欠缺的",
+         "更多的运用这些能力，思考如何令它们取得更大的效果，是否可以收集更多的反馈以提升自己的信心？"),
         ("盲区", "q3", "blind", "#dd6b20",
-         "那些您认为自己非常擅长、但他人认为有所欠缺的能力。盲区之所以危险，恰恰是因为您以前不知道它存在，也就没有机会修正。",
-         ""),
+         "那些我们认为自己非常擅长，但他人认为有所欠缺的",
+         "尝试理解——它是如何产生的？是否你的努力或积极的意图对他人而言并不明显？如何能够改变这一点？"),
         ("待发展区", "q4", "dev", "#e53e3e",
-         "那些您自己和他人都认为有所欠缺的能力。",
-         ""),
+         "那些自己和他人都认为有所欠缺的",
+         "它们是否对于你有效发挥当前角色、取得更大成功至关重要？你可以具体做些什么？团队中是否有人可以提供帮助？"),
     ]:
         dims_in_quadrant = []
         for i, dim in enumerate(DIM_NAMES):
@@ -510,6 +526,11 @@ def extract_person(row: pd.Series, norms: dict, questionnaire_items: list[dict])
     import re as _re
     def _clean(xx):
         t = xx.strip()
+        # Strip leading [source] markers
+        if t.startswith(chr(91)):
+            _close = t.find(chr(93))
+            if 0 <= _close < 10:
+                t = t[_close+1:].strip()
         i = 0
         while i < len(t) and (t[i].isdigit() or t[i] in (chr(46), chr(0x3001), chr(32), chr(0xFF09))):
             i += 1
@@ -538,13 +559,18 @@ def extract_person(row: pd.Series, norms: dict, questionnaire_items: list[dict])
             for _stype in ["优势评语", "发展建议"]:
                 if _stype not in _cdata:
                     continue
-                for _src, _entries in _cdata[_stype].items():
-                    if _src not in _source_label_map:
+                for _src in ["上级", "协同方", "下级"]:
+                    if _src not in _cdata[_stype]:
                         continue
+                    _entries = _cdata[_stype][_src]
                     _cleaned = []
                     for _e in _entries:
                         _t = _e["text"]
                         _c = _t.strip()
+                        if _c.startswith(chr(91)):
+                            _close = _c.find(chr(93))
+                            if 0 <= _close < 10:
+                                _c = _c[_close+1:].strip()
                         _i = 0
                         while _i < len(_c) and (_c[_i].isdigit() or _c[_i] in (chr(46), chr(0x3001), chr(32), chr(0xFF09))):
                             _i += 1
@@ -576,14 +602,14 @@ def extract_person(row: pd.Series, norms: dict, questionnaire_items: list[dict])
                     "label": "优势项主题",
                     "codes": [{"name": s["name"], "count": s["count"],
                                "source_distribution": s.get("source_distribution",""),
-                               "rep_quote": s.get("rep_quote","")} for s in _strength]
+                               "rep_quote": _clean_rep_quote(s.get("rep_quote",""))} for s in _strength]
                 })
             if _dev:
                 ctx["comment_axial_codes"].append({
                     "label": "待发展项主题",
                     "codes": [{"name": s["name"], "count": s["count"],
                                "source_distribution": s.get("source_distribution",""),
-                               "rep_quote": s.get("rep_quote","")} for s in _dev]
+                               "rep_quote": _clean_rep_quote(s.get("rep_quote",""))} for s in _dev]
                 })
         except Exception:
             ctx["comment_profile"] = ""
@@ -592,8 +618,8 @@ def extract_person(row: pd.Series, norms: dict, questionnaire_items: list[dict])
         ctx["comment_profile"] = ""
         ctx["comment_axial_codes"] = []
 
-    return ctx
 
+    return ctx
 
 def _analyze_rating_pattern(self_scores, superior_scores, peer_scores, subordinate_scores):
     """检测评分模式。"""
@@ -755,8 +781,7 @@ def main():
             "<p>本报告基于2026年度360°领导力评估数据生成。360°评估通过收集被评价人本人、上级、协同方、下级"
             "四个维度的反馈，提供多维度的领导力画像，帮助管理者了解自身优势与待发展领域。</p>"
             "<p>评估涵盖 <strong>3大领域</strong>（驱动业务、组织建设、文化旗手）下的 <strong>7个领导力要素</strong>，"
-            "采用 Likert 5点量表（1=远低于期望，3=符合期望，5=远超期望）。</p>"
-            "<p>报告中使用了 <strong>乔哈里视窗</strong>（Johari Window）框架来分析自评与他评的认知差异，"
+            "采用 Likert 5点量表（1=从未发生，5=一贯如此）。报告中使用了 <strong>乔哈里视窗</strong>（Johari Window）框架来分析自评与他评的认知差异，"
             "帮助您识别<strong>优势区</strong>（自他共识的优势）、<strong>潜能区</strong>（他人认可的潜在优势）、"
             "<strong>盲区</strong>（自评高于他评的维度）和<strong>待发展区</strong>（自他共识的提升方向）。</p>"
             "<p><strong>报告阅读提示</strong>：建议按章节顺序阅读，重点关注第2.3节乔哈里视窗的象限分析"

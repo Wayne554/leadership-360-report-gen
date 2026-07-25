@@ -249,7 +249,7 @@ section { margin: 40px 0; }
 .quadrant-card.q4 { background: #fef2f2; border: 1px solid #fecaca; }
 .quadrant-card .q-label { font-weight: 700; font-size: .9rem; margin-bottom: 4px; }
 .quadrant-card .q-dims { margin: 4px 0; display: flex; flex-wrap: wrap; gap: 4px; }
-.quadrant-card .q-desc { color: var(--color-text-secondary); font-size: .8rem; margin-top: 4px; }
+.quadrant-card .q-desc-inline { color: var(--color-text-secondary); font-size: .8rem; margin-left: 8px; font-weight: 400; }
 .quadrant-card .q-advice { color: var(--color-text); font-size: .8rem; margin-top: 6px; padding-top: 6px; border-top: 1px dashed var(--color-border); }
 
 /* ===== Comment Codes ===== */
@@ -501,10 +501,9 @@ section { margin: 40px 0; }
 <div class="quadrant-grid">
 {% for qname, qdata in johari_quadrants.items() %}
 <div class="quadrant-card {{ qdata.css_class }}">
-  <div class="q-label" style="color:{{ qdata.color }}">{{ qname }}</div>
+  <div class="q-label" style="color:{{ qdata.color }}">{{ qname }}<span class="q-desc-inline">{{ qdata.description }}</span></div>
   <div class="q-dims">{% if qdata.dims %}{% for d in qdata.dims %}<span class="dim-tag {{ qdata.tag_class }}">{{ d }}</span> {% endfor %}{% else %}<span style="color:#94a3b8;">—</span>{% endif %}</div>
-  <div class="q-desc">{{ qdata.description }}</div>
-  {% if qdata.dims %}<div class="q-advice">{{ qdata.advice }}</div>{% endif %}
+  <div class="q-advice">{{ qdata.advice }}</div>
 </div>
 {% endfor %}
 </div>
