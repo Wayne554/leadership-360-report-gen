@@ -25,6 +25,11 @@ logger = logging.getLogger(__name__)
 DEEPSEEK_API_KEY = os.environ.get("DEEPSEEK_API_KEY", "")
 DEEPSEEK_BASE_URL = "https://api.deepseek.com"
 DEEPSEEK_MODEL = "deepseek-v4-flash"
+# 思考模式说明（详见 https://api-docs.deepseek.com/zh-cn/guides/thinking_mode）：
+#   thinking 默认 enabled，通过 extra_body 可显式控制
+#   reasoning_effort="max" 适用于复杂合成任务（发展建议生成）
+#   思考模式下 temperature/top_p 等参数自动失效（传参不报错）
+_DEEPSEEK_REASONING_EFFORT = "max"
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 SUGGESTIONS_DIR = PROJECT_ROOT / "data" / "processed" / "rag_cache"
@@ -101,9 +106,11 @@ def _call_deepseek(messages: list, temperature: float = 0.3) -> str | None:
             resp = client.chat.completions.create(
                 model=DEEPSEEK_MODEL,
                 messages=messages,
-                temperature=temperature,
                 max_tokens=4096,
                 response_format={"type": "json_object"},
+                reasoning_effort=_DEEPSEEK_REASONING_EFFORT,
+                extra_body={"thinking": {"type": "enabled"}},
+                # temperature is ignored in thinking mode; kept for non-thinking fallback
             )
             return resp.choices[0].message.content
         except Exception as e:

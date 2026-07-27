@@ -21,6 +21,13 @@ _ENCODING_DEEPSEEK_API_KEY = os.environ.get("DEEPSEEK_API_KEY", "")
 _ENCODING_DEEPSEEK_BASE_URL = "https://api.deepseek.com"
 _ENCODING_DEEPSEEK_MODEL = "deepseek-v4-flash"
 
+_ENCODING_REASONING_EFFORT = "high"
+
+# 思考模式说明（详见 https://api-docs.deepseek.com/zh-cn/guides/thinking_mode）：
+#   thinking 默认 enabled，通过 extra_body 可显式控制
+#   reasoning_effort="high" 适用于结构化输出任务（主轴编码 + 画像）
+#   思考模式下 temperature/top_p 等参数自动失效（传参不报错）
+
 _ENCODING_SYSTEM_PROMPT = """你是一位经验丰富的领导力发展教练与人才评估专家。
 你的任务是基于一位管理者在 360° 反馈中获得的开放式评语编码结果，完成两件事：
 
@@ -155,8 +162,11 @@ def _call_llm_api(messages: list, temperature: float = 0.3) -> str | None:
             resp = client.chat.completions.create(
                 model=_ENCODING_DEEPSEEK_MODEL,
                 messages=messages,
-                temperature=temperature,
                 max_tokens=4096,
+                reasoning_effort=_ENCODING_REASONING_EFFORT,
+                extra_body={"thinking": {"type": "enabled"}},
+                # temperature is ignored in thinking mode; kept for non-thinking fallback
+                temperature=temperature,
                 response_format={"type": "json_object"},
             )
             content = resp.choices[0].message.content

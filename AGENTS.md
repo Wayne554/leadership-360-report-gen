@@ -167,4 +167,5 @@ leadership-360-feedback/
 | 1.7 | 2026-07-22 | 新增L3全面统计分析脚本与报告（generate_l3_analysis.py）；新增L3阈值分析脚本与报告（threshold_analysis_l3.py）；L3常模计算；encoding.py Phase 4 LLM接入（call_llm→DeepSeek API）；_call_llm_api空内容重试；max_tokens 2048→4096；L3+L4距离数据合并 |
 | 1.8 | 2026-07-22 | 新增 docs/11 L3/L4乔哈里阈值选择分析专题文档；AGENTS.md目录树同步更新 docs/08-11 |
 | 1.11 | 2026-07-23 | 群体报告可视化全集(10张定稿图表); 新增docs/12图表规格说明书; 文档&图表嵌入draft; 乔哈里阈值调整为4.40(待确认)
+| 1.12 | 2026-07-27 | 第二十次会话：DeepSeek思考模式集成（encoding.py + llm_synthesizer.py）；ABOVE/BELOW_EXPLAIN 全部改写为教练式叙事风格
 | 1.9 | 2026-07-22 | Phase A: 阈值层级感知化 - _get_other_threshold() 函数；narrative.py动态阈值；dimension_distances.json重算(L3=4.30/L4=4.40)；precompute_distances.py；Phase B: L3评语编码Phase 1-4全量196人完成(DeepSeek LLM成功率100%) |
